@@ -33,7 +33,7 @@ laser_surf = pygame.image.load(
 laser_rect = laser_surf.get_frect(
     bottomleft=(20, WINDOW_HEIGHT - 20))
 
-player_direction = pygame.math.Vector2(1, 1)
+player_direction = pygame.math.Vector2()
 player_speed = 300
 
 
@@ -43,21 +43,31 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+        # if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
+        #     print(1)
+        # if event.type == pygame.MOUSEMOTION:
+        #     player_rect.center = event.pos
     # draw the game
+
+    # input
+    # pygame.mouse.get_pos()
+    keys = pygame.key.get_pressed()
+    player_direction.x = int(keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT])
+    player_direction.y = int(keys[pygame.K_DOWN]) - int(keys[pygame.K_UP])
+    player_direction = player_direction.normalize(
+    ) if player_direction else player_direction
+    player_rect.center += player_direction * player_speed * dt
+
+    recent_keys = pygame.key.get_just_pressed()
+    if recent_keys[pygame.K_SPACE]:
+        print('pew pew')
+
     display_surface.fill('darkgray')
     for pos in star_positions:
         display_surface.blit(star_surf, pos)
     display_surface.blit(meteor_surf, meteor_rect)
     display_surface.blit(laser_surf, laser_rect)
     display_surface.blit(player_surf, player_rect)
-
-    # player movement
-    player_rect.center += player_direction * player_speed * dt
-    if player_rect.bottom >= WINDOW_HEIGHT or player_rect.top <= 0:
-        player_direction.y *= -1
-    if player_rect.right >= WINDOW_WIDTH or player_rect.left <= 0:
-        player_direction.x *= -1
 
     pygame.display.update()
 pygame.quit()
