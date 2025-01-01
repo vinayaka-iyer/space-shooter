@@ -8,6 +8,7 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Space Shooter')
 running = True
+clock = pygame.time.Clock()
 
 # surface
 surf = pygame.Surface((100, 200))
@@ -32,10 +33,12 @@ laser_surf = pygame.image.load(
 laser_rect = laser_surf.get_frect(
     bottomleft=(20, WINDOW_HEIGHT - 20))
 
-player_direction = 1
+player_direction = pygame.math.Vector2(1, 1)
+player_speed = 300
 
 
 while running:
+    dt = clock.tick() / 1000
     # event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -50,9 +53,11 @@ while running:
     display_surface.blit(player_surf, player_rect)
 
     # player movement
-    player_rect.x += player_direction * 0.4
-    if player_rect.right > WINDOW_WIDTH or player_rect.left < 0:
-        player_direction *= -1
+    player_rect.center += player_direction * player_speed * dt
+    if player_rect.bottom >= WINDOW_HEIGHT or player_rect.top <= 0:
+        player_direction.y *= -1
+    if player_rect.right >= WINDOW_WIDTH or player_rect.left <= 0:
+        player_direction.x *= -1
 
     pygame.display.update()
 pygame.quit()
